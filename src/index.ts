@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
 
@@ -98,6 +99,30 @@ target.position.set( 0, 0, 0 );
 spotLight.castShadow = true;
 scene.add( spotLight );
 
+
+
+// Set up animator
+const clock = new THREE.Clock();
+let mixer: THREE.AnimationMixer;
+
+// Set up player
+const gltfLoader = new GLTFLoader();
+gltfLoader.load('models/archer.glb', (gltf) => {
+  scene.add(gltf.scene);
+  gltf.scene.position.set(2, 0, 2);
+
+  mixer = new THREE.AnimationMixer( gltf.scene );
+        
+  console.log('animations', gltf.animations);
+
+  var action = mixer.clipAction( gltf.animations[1] );
+  action.loop = THREE.LoopRepeat;
+  action.play();
+
+});
+
+
+
 // Start the animation loop
 const animate = function () {
   requestAnimationFrame(animate);
@@ -108,6 +133,10 @@ const animate = function () {
 
   // renderer.render(scene, camera);
   composer.render();
+
+  if (mixer) {
+    mixer.update(clock.getDelta());
+  }
 };
 
 animate();
