@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
+import { InputManager } from './InputManager';
 import { Player } from './Player';
 
 // Set up the scene, camera, and renderer
@@ -101,6 +102,8 @@ spotLight.castShadow = true;
 scene.add( spotLight );
 
 
+const inputManager = new InputManager();
+window['inputManager'] = inputManager;
 const clock = new THREE.Clock();
 const player = new Player();
 scene.add(player);
