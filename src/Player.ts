@@ -73,15 +73,15 @@ export class Player extends GameObject{
 
     private playRunAnimation() {
         if (!this.animationActions['Run'].isRunning()) {
-            this.animationActions['Idle'].stop();
             this.animationActions['Run'].play();            
+            this.animationActions['Idle'].stop();
         }
     }
 
     private playIdleAnimation() {
         if (!this.animationActions['Idle'].isRunning()) {
-            this.animationActions['Run'].stop();
-            this.animationActions['Idle'].play();            
+            this.animationActions['Idle'].play();           
+            this.animationActions['Run'].stop();             
         }
     }
 
