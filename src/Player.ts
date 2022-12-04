@@ -10,7 +10,7 @@ export class Player extends GameObject{
 
     private gltf: GLTF;
     private animationMixer: THREE.AnimationMixer;
-    
+    private animationActions: { [name: string]: THREE.AnimationAction }; 
     private speed = 3;
 
     constructor() {
@@ -28,20 +28,21 @@ export class Player extends GameObject{
             gltf.scene.position.set(2, 0, 2);
 
             this.animationMixer = new THREE.AnimationMixer( gltf.scene );
-                    
-            console.log('animations', gltf.animations);
-            var action = this.animationMixer.clipAction( gltf.animations[1] );
-            action.loop = THREE.LoopRepeat;
-            action.play();
+
+            this.animationActions = {};
+            for (let animation of gltf.animations) {
+                this.animationActions[animation.name] = this.animationMixer.clipAction(animation);
+                this.animationActions[animation.name].loop = THREE.LoopRepeat;
+            }
         });
 
     }
 
     private velocity = new Vector3(0, 0, 0);
     render(delta: number): void {
-        if (this.animationMixer) {
-            this.animationMixer.update(delta);
-        }
+        if (!this.gltf) return;
+
+        this.animationMixer.update(delta);
 
         this.velocity.set(0, 0, 0);
 
@@ -59,7 +60,29 @@ export class Player extends GameObject{
         }
 
         this.velocity = this.velocity.normalize().multiplyScalar(this.speed * delta);
-        this.position.add(this.velocity);
+        
+
+        if(this.velocity.length() > 0) {
+            this.position.add(this.velocity);
+            this.gltf.scene.rotation.y = Math.atan2(-this.velocity.z, this.velocity.x) + Math.PI/2;
+            this.playRunAnimation();
+        } else {
+            this.playIdleAnimation();
+        }
+    }
+
+    private playRunAnimation() {
+        if (!this.animationActions['Run'].isRunning()) {
+            this.animationActions['Idle'].stop();
+            this.animationActions['Run'].play();            
+        }
+    }
+
+    private playIdleAnimation() {
+        if (!this.animationActions['Idle'].isRunning()) {
+            this.animationActions['Run'].stop();
+            this.animationActions['Idle'].play();            
+        }
     }
 
 }
