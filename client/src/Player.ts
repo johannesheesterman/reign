@@ -1,6 +1,8 @@
+import * as signalR from "@microsoft/signalr";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { clone } from "three/examples/jsm/utils/SkeletonUtils";
 import { GameObject } from "./GameObject";
 import { InputManager } from "./InputManager";
 
@@ -9,13 +11,45 @@ declare var inputManager: InputManager;
 export class Player extends GameObject{
 
     private gltf: GLTF;
+    private scene: THREE.Object3D;
     private animationMixer: THREE.AnimationMixer;
     private animationActions: { [name: string]: THREE.AnimationAction }; 
     private speed = 3;
 
+    private otherPlayers: { [id:string]: THREE.Object3D } = {};
+
     constructor() {
         super();
         this.initialize();
+
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5044/game")
+            .build();
+
+            
+        connection.on("messageReceived", (connId: string, x: number, y: number, z: number, r: number) => {
+            if (connId == connection.connectionId) return;
+            if (!this.otherPlayers[connId]) {
+                this.otherPlayers[connId] = clone(this.gltf.scene);
+                this.parent.add( this.otherPlayers[connId]);
+            } 
+            console.log(x, y, z);
+            this.otherPlayers[connId].position.set(x, y, z);
+            
+        });
+
+        connection.start()
+            .catch((err) => console.error(err))
+            .then(() => {
+                setInterval(() => {
+                    if (this.gltf) {
+                        connection.send("updatePos", this.position.x , this.position.y, this.position.z, this.scene.rotation.y);    
+                    }                    
+                }, 100);
+            });
+        
+      
     }
 
     private initialize() {
@@ -23,11 +57,10 @@ export class Player extends GameObject{
         const gltfLoader = new GLTFLoader();
         gltfLoader.load('models/archer.glb', (gltf) => {
             this.gltf = gltf;
-        
-            this.add(gltf.scene);
-            gltf.scene.position.set(2, 0, 2);
+            this.scene = clone(gltf.scene);
+            this.add(this.scene);
 
-            this.animationMixer = new THREE.AnimationMixer( gltf.scene );
+            this.animationMixer = new THREE.AnimationMixer( this.scene );
 
             this.animationActions = {};
             for (let animation of gltf.animations) {
@@ -64,7 +97,7 @@ export class Player extends GameObject{
 
         if(this.velocity.length() > 0) {
             this.position.add(this.velocity);
-            this.gltf.scene.rotation.y = Math.atan2(-this.velocity.z, this.velocity.x) + Math.PI/2;
+            this.scene.rotation.y = Math.atan2(-this.velocity.z, this.velocity.x) + Math.PI/2;
             this.playRunAnimation();
         } else {
             this.playIdleAnimation();
