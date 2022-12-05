@@ -1,79 +1,46 @@
-import * as signalR from "@microsoft/signalr";
 import * as THREE from "three";
 import { Vector3 } from "three";
-import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { clone } from "three/examples/jsm/utils/SkeletonUtils";
 import { GameObject } from "./GameObject";
+import { GameServer } from "./GameServer";
 import { InputManager } from "./InputManager";
 
 declare var inputManager: InputManager;
+declare var gameServer: GameServer;
 
 export class Player extends GameObject{
 
-    private gltf: GLTF;
     private scene: THREE.Object3D;
     private animationMixer: THREE.AnimationMixer;
     private animationActions: { [name: string]: THREE.AnimationAction }; 
     private speed = 3;
-
-    private otherPlayers: { [id:string]: THREE.Object3D } = {};
-
+    
     constructor() {
         super();
         this.initialize();
 
-
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5044/game")
-            .build();
-
-            
-        connection.on("messageReceived", (connId: string, x: number, y: number, z: number, r: number) => {
-            if (connId == connection.connectionId) return;
-            if (!this.otherPlayers[connId]) {
-                this.otherPlayers[connId] = clone(this.gltf.scene);
-                this.parent.add( this.otherPlayers[connId]);
-            } 
-            console.log(x, y, z);
-            this.otherPlayers[connId].position.set(x, y, z);
-            
-        });
-
-        connection.start()
-            .catch((err) => console.error(err))
-            .then(() => {
-                setInterval(() => {
-                    if (this.gltf) {
-                        connection.send("updatePos", this.position.x , this.position.y, this.position.z, this.scene.rotation.y);    
-                    }                    
-                }, 100);
-            });
-        
-      
+        setInterval(() => {
+            if (this.scene) {
+                gameServer.sendPosition(this.position, this.scene.rotation.y);
+            }                    
+        }, 100);
     }
 
-    private initialize() {
-
-        const gltfLoader = new GLTFLoader();
-        gltfLoader.load('models/archer.glb', (gltf) => {
-            this.gltf = gltf;
-            this.scene = clone(gltf.scene);
-            this.add(this.scene);
-
-            this.animationMixer = new THREE.AnimationMixer( this.scene );
-
-            this.animationActions = {};
-            for (let animation of gltf.animations) {
-                this.animationActions[animation.name] = this.animationMixer.clipAction(animation);
-                this.animationActions[animation.name].loop = THREE.LoopRepeat;
-            }
-        });
-
+    private async initialize() {
+        const model = await gameServer.modelLoader.getModel('models/archer.glb');
+        this.scene = model;
+        this.add(this.scene);
+        
+        this.animationMixer = new THREE.AnimationMixer( this.scene );
+        this.animationActions = {};
+        for (let animation of this.scene.animations) {
+            this.animationActions[animation.name] = this.animationMixer.clipAction(animation);
+            this.animationActions[animation.name].loop = THREE.LoopRepeat;
+        }
     }
 
     private velocity = new Vector3(0, 0, 0);
     render(delta: number): void {
-        if (!this.gltf) return;
+        if (!this.scene) return;
 
         this.animationMixer.update(delta);
 
