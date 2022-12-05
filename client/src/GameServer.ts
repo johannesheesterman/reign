@@ -20,19 +20,14 @@ export class GameServer {
             .withUrl(this.gameServerUrl)
             .build();
 
-        this.connection.on("messageReceived", (connId: string, x: number, y: number, z: number, r: number) => {
-            this.onReceivePosition(connId, x, y, z, r);
+        this.connection.on("playerPos", (connId: string, x: number, y: number, z: number, r: number, t: number) => {
+            this.onReceivePosition(connId, x, y, z, r, t);
         });
 
         this.connection.start().catch((err) => console.error(err))
     }
     
-    sendPosition(position: Vector3, rotation: number) {
-        if (this.connection.state != signalR.HubConnectionState.Connected) return;
-        this.connection.send("updatePos", position.x , position.y, position.z, rotation);
-    }
-
-    private async onReceivePosition(connId: string, x: number, y: number, z: number, r: number) {
+    private async onReceivePosition(connId: string, x: number, y: number, z: number, r: number, t: number) {
         if (connId == this.connection.connectionId) return;
 
         if (!this.otherPlayers[connId]) {
@@ -41,5 +36,10 @@ export class GameServer {
             this.world.add( this.otherPlayers[connId]);
         } 
         this.otherPlayers[connId].position.set(x, y, z);
+    }
+
+    sendPosition(position: Vector3, rotation: number) {
+        if (this.connection.state != signalR.HubConnectionState.Connected) return;
+        this.connection.send("updatePos", position.x , position.y, position.z, rotation, Date.now());
     }
 }
