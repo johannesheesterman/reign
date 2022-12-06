@@ -6,32 +6,35 @@ namespace Reign.Server.Hubs;
 
 public class GameHub : Hub
 {
+    private readonly WorldStateService _worldStateService;
 
-    private Dictionary<string, PlayerPosition> _playerPositions = new ();
+    public GameHub(WorldStateService worldStateService)
+    {
+        this._worldStateService = worldStateService;
+    }
+
+    public override async Task OnConnectedAsync()
+    {
+
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        _worldStateService.Remove(Context.ConnectionId);
+    }
 
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
-        if (!_playerPositions.ContainsKey(Context.ConnectionId))
-            _playerPositions[Context.ConnectionId] = new PlayerPosition();
-
-        var playerPosition = _playerPositions[Context.ConnectionId];
-        if (t <= playerPosition.Time) return;
-
+        var playerPosition = _worldStateService.GetWorldObjectState(Context.ConnectionId);
         playerPosition.Time = t;
 
         var newPosition = new Vector3(x, y, z);
-        if (newPosition == playerPosition.Position && r == playerPosition.Rotation) return;
+        var oldPosition = new Vector3(playerPosition.X, playerPosition.Y, playerPosition.Z);
+        if (newPosition == oldPosition && r == playerPosition.Rotation) return;
 
-        playerPosition.Position = newPosition;
+        playerPosition.X = x;
+        playerPosition.Y = y;
+        playerPosition.Z = z;
         playerPosition.Rotation = r;
-        await Clients.All.SendAsync("playerPos", Context.ConnectionId, x, y, z, r, t);  
-    } 
-}
-
-
-public class PlayerPosition 
-{
-    public Vector3 Position { get; set; }
-    public float Rotation { get; set; }
-    public long Time { get; set; }
+    }    
 }

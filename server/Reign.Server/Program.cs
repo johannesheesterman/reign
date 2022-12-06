@@ -1,3 +1,4 @@
+using Reign.Server;
 using Reign.Server.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
                 .SetIsOriginAllowed((host) => true)
                 .AllowCredentials();
     }));
+builder.Services.AddSingleton<WorldStateService>();
 
 var app = builder.Build();
 app.UseCors("CorsPolicy");
