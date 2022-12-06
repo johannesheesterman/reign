@@ -39,7 +39,7 @@ public class WorldStateService
             {
                 _worldState["T"] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 await _hubContext.Clients.All.SendAsync("worldState", _worldState);  
-                await Task.Delay(100);
+                await Task.Delay(50);
             }
         }).Start();
     }

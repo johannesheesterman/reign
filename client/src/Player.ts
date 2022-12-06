@@ -40,7 +40,7 @@ export class Player extends GameObject{
 
         this.animationMixer.update(delta);
 
-        if(this.velocity.length() > 0) {
+        if(this.velocity.length() > 0.0001) {
             this.position.add(this.velocity);
             this.scene.rotation.y = Math.atan2(-this.velocity.z, this.velocity.x) + Math.PI/2;
             this.playRunAnimation();
