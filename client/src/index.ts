@@ -5,6 +5,7 @@ import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPix
 import { GameServer } from './GameServer';
 import { InputManager } from './InputManager';
 import { Player } from './Player';
+import { PlayerController } from './PlayerController';
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -105,7 +106,7 @@ scene.add( spotLight );
 window['gameServer'] =  new GameServer(scene);
 window['inputManager'] =  new InputManager();;
 const clock = new THREE.Clock();
-const player = new Player();
+const player = new PlayerController();
 scene.add(player);
 
 // Start the animation loop
