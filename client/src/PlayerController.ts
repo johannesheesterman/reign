@@ -23,7 +23,7 @@ export class PlayerController extends GameObject {
 
     private initializeGameServerUpdates() {
         setInterval(() => {
-            gameServer.sendPosition(this.position, this.model.scene.rotation.y);      
+            gameServer.sendPosition(this.model.position, this.model.scene.rotation.y);      
         }, 100);
     }
 

@@ -61,7 +61,7 @@ scene.add(cube);
 
 // Setup sphere
 const sphereGeometry = new THREE.SphereGeometry(1);
-const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
+const sphereMaterial = new THREE.MeshToonMaterial({ color: 0xffff00 });
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 sphere.receiveShadow = true;
 sphere.castShadow = true;

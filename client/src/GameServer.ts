@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { Vector3 } from "three";
 import { ModelLoader } from "./ModelLoader";
+import { Player } from "./Player";
 
 export class GameServer {
 
@@ -31,11 +32,12 @@ export class GameServer {
         if (connId == this.connection.connectionId) return;
 
         if (!this.otherPlayers[connId]) {
-            const model = await this.modelLoader.getModel('models/archer.glb');
+            const model = await Player.CreateInstance();
             this.otherPlayers[connId] = model;
-            this.world.add( this.otherPlayers[connId]);
+            this.world.add(this.otherPlayers[connId]);
         } 
         this.otherPlayers[connId].position.set(x, y, z);
+        (this.otherPlayers[connId] as Player).render(0);
     }
 
     sendPosition(position: Vector3, rotation: number) {
