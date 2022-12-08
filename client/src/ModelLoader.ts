@@ -1,3 +1,4 @@
+import { Mesh } from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils";
 
@@ -16,6 +17,12 @@ export class ModelLoader {
 
         const object = clone(this.gltfs[url].scene);
         object.animations = [...this.gltfs[url].animations];
+
+        object.traverse( (node) => {
+            if ( !(node as Mesh).isMesh) return;
+            node.castShadow = true;
+            node.receiveShadow = true;    
+        } );
         return object;
     }
 
