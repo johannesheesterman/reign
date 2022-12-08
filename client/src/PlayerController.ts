@@ -11,24 +11,23 @@ export class PlayerController extends GameObject {
     
     private speed = 3;
     private model: Player;
-
-    private mousePos = new THREE.Vector2();
     private mouseDown = false;
-    private playerPos = new THREE.Vector3();
 
+    private angle = 0;
     
     constructor(private camera: THREE.Camera) {
         super();
 
         Player.CreateInstance().then((model) => {
             this.model = model;
+            this.model.add(camera);
             this.add(this.model)
             this.initializeGameServerUpdates();
         });        
 
         document.addEventListener('mousedown', () => this.mouseDown = true);
         document.addEventListener('mouseup', () => this.mouseDown = false);
-        document.addEventListener('mousemove', (e) => this.mousePos.set(e.clientX, e.clientY));
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
     }
 
     private initializeGameServerUpdates() {
@@ -37,18 +36,18 @@ export class PlayerController extends GameObject {
         }, 15);
     }
 
+    private onMouseMove(e: MouseEvent) {
+        this.angle = Math.atan2(e.clientY - window.innerHeight/2, e.clientX - window.innerWidth/2) + 1.25 * Math.PI;
+    }
+
     render(delta: number): void {
         if (!this.model) return;
         
         this.model.velocity.set(0, 0, 0);
         
         if (this.mouseDown) {
-            this.updatePlayerPos();
-
-            const angle = Math.atan2(this.mousePos.y - this.playerPos.y, this.mousePos.x - this.playerPos.x) + 1.25 * Math.PI;
-
-            this.model.velocity.setX(Math.sin(-angle));
-            this.model.velocity.setZ(Math.cos(angle));
+            this.model.velocity.setX(Math.sin(-this.angle));
+            this.model.velocity.setZ(Math.cos(this.angle));
 
             this.model.velocity = this.model.velocity
                 .normalize()
@@ -56,16 +55,5 @@ export class PlayerController extends GameObject {
         }
         
         this.model.render(delta);
-    }
-
-    private updatePlayerPos() {
-        this.playerPos = this.playerPos.setFromMatrixPosition(this.model.matrixWorld);
-        this.playerPos.project(this.camera);                
-        let widthHalf = window.innerWidth / 2;
-        let heightHalf = window.innerHeight / 2;
-
-        this.playerPos.x = (this.playerPos.x * widthHalf) + widthHalf;
-        this.playerPos.y = - (this.playerPos.y * heightHalf) + heightHalf;
-        this.playerPos.z = 0;
     }
 }

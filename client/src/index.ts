@@ -27,11 +27,11 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Set up pixelation effect
-const composer = new EffectComposer( renderer );
-const renderPixelatedPass = new RenderPixelatedPass( 4, scene, camera );
-renderPixelatedPass.normalEdgeStrength = .6;
-renderPixelatedPass.depthEdgeStrength = .8;
-composer.addPass( renderPixelatedPass );
+// const composer = new EffectComposer( renderer );
+// const renderPixelatedPass = new RenderPixelatedPass( 4, scene, camera );
+// renderPixelatedPass.normalEdgeStrength = .6;
+// renderPixelatedPass.depthEdgeStrength = .8;
+// composer.addPass( renderPixelatedPass );
 
 // Set up plane
 const loader = new THREE.TextureLoader();
@@ -117,8 +117,8 @@ const animate = function () {
   crystalMesh.rotation.x += 0.01;
   crystalMesh.rotation.y += 0.01;
 
-  // renderer.render(scene, camera);
-  composer.render();
+  renderer.render(scene, camera);
+  //composer.render();
 
   const delta = clock.getDelta();
   player.render(delta)
