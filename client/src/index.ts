@@ -3,10 +3,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
 import { GameServer } from './GameServer';
-import { InputManager } from './InputManager';
-import { JoystickController } from './JoystickController';
+import { InputManager } from './Controllers/InputManager';
+import { JoystickController } from './Controllers/JoystickController';
 import { Player } from './Player';
-import { PlayerController } from './PlayerController';
+import { PlayerController } from './Controllers/PlayerController';
 
 
 
