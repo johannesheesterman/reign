@@ -53,6 +53,16 @@ export class PlayerController extends GameObject {
                 .normalize()
                 .multiplyScalar(this.speed * delta);            
         }
+
+        if (inputManager.leftJoystick.value.x != 0 && inputManager.leftJoystick.value.y != 0) {
+            const angle = Math.atan2(inputManager.leftJoystick.value.y , inputManager.leftJoystick.value.x) + 1.25 * Math.PI;
+            this.model.velocity.setX(Math.sin(-angle));
+            this.model.velocity.setZ(Math.cos(angle));
+
+            this.model.velocity = this.model.velocity
+                .normalize()
+                .multiplyScalar(this.speed * delta);
+        }
         
         this.model.render(delta);
     }

@@ -4,13 +4,15 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass';
 import { GameServer } from './GameServer';
 import { InputManager } from './InputManager';
+import { JoystickController } from './JoystickController';
 import { Player } from './Player';
 import { PlayerController } from './PlayerController';
 
+
+
+
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
-
-const aspectRatio = window.innerWidth / window.innerHeight;
 
 // Set up the isometric camera
 const aspect = window.innerWidth / window.innerHeight;
@@ -84,8 +86,6 @@ crystalMesh.receiveShadow = true;
 crystalMesh.castShadow = true;
 scene.add( crystalMesh );
 
-
-
 // Set up lighting
 scene.add( new THREE.AmbientLight( 0x2d3645, 1.5 ) );
 
@@ -118,7 +118,6 @@ const animate = function () {
   crystalMesh.rotation.y += 0.01;
 
   renderer.render(scene, camera);
-  //composer.render();
 
   const delta = clock.getDelta();
   player.render(delta)
@@ -128,12 +127,25 @@ animate();
 
 
 function pixelTexture( texture ) {
-
   texture.minFilter = THREE.NearestFilter;
   texture.magFilter = THREE.NearestFilter;
   texture.generateMipmaps = false;
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   return texture;
+}
+
+
+
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+
+    const aspect = window.innerWidth / window.innerHeight;
+    camera.left = - d * aspect;
+    camera.right = d * aspect;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
 }

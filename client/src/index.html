@@ -1,18 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
         }
+
+        #joystick-left {
+            position: absolute;
+            bottom: 48px;
+            left: 48px;
+        }
+
+        .joystick-base {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: solid 3px rgb(128 128 128 / 60%);
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            ;
+        }
+
+        .joystick-stick {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgb(128 128 128 / 60%);
+        }
+
+        button {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+        }
+
+        .icon-btn {
+            background:none;
+            border:none;
+        }
     </style>
+
+    <script>
+        var isFullScreen = false;
+        function fullScreen() {
+
+            if(isFullScreen) {
+                document.exitFullscreen().then(() => isFullScreen = false);
+            } else {               
+                document.body.requestFullscreen({
+                    navigationUI: 'hide'
+                }).then(() => isFullScreen = true);
+            }            
+        }
+    </script>
 </head>
+
 <body>
-    
+    <button onclick="fullScreen()" class="icon-btn" style="font-size:28px">⛶</button>
+
+    <div id="joystick-left" class="joystick-base">
+        <div id="stick-left" style="position: absolute; " class="joystick-stick"></div>
+    </div>
+
+
 </body>
+
 </html>

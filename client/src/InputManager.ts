@@ -1,8 +1,11 @@
+import { JoystickController } from "./JoystickController";
 
 
 export class InputManager {
 
     private state: { [keyCode: string]: boolean };
+
+    public leftJoystick: JoystickController;
 
     private key_map = {
         'up': 'w',
@@ -15,6 +18,8 @@ export class InputManager {
         this.state = {};
         window.onkeyup = (e) => this.onKeyDown(e);
         window.onkeydown = (e) => this.onKeyUp(e);
+
+        this.leftJoystick = new JoystickController("stick-left", 64, 8);
     }
 
     private onKeyUp(e: KeyboardEvent) {
