@@ -106,7 +106,7 @@ scene.add( spotLight );
 window['gameServer'] =  new GameServer(scene);
 window['inputManager'] =  new InputManager();;
 const clock = new THREE.Clock();
-const player = new PlayerController();
+const player = new PlayerController(camera);
 scene.add(player);
 
 // Start the animation loop
