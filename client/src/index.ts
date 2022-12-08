@@ -49,7 +49,7 @@ const planeMesh = new THREE.Mesh(
 );
 planeMesh.receiveShadow = true;
 planeMesh.rotation.x = - Math.PI / 2;
-planeMesh.position.set(0, -.5, 0);
+planeMesh.position.set(0, 0, 0);
 scene.add( planeMesh );
 
 // Setup cube
@@ -58,7 +58,7 @@ const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(cubeGeometry, material);
 cube.receiveShadow = true;
 cube.castShadow = true;
-cube.position.set(-2.5, 0, 0);
+cube.position.set(-2.5, 0.5, 0);
 scene.add(cube);
 
 // Setup sphere
@@ -67,7 +67,7 @@ const sphereMaterial = new THREE.MeshToonMaterial({ color: 0xffff00 });
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 sphere.receiveShadow = true;
 sphere.castShadow = true;
-sphere.position.set(2.5, 0, 0);
+sphere.position.set(2.5, 0.7, 0);
 scene.add(sphere);
 
 // Set diamond
@@ -82,6 +82,7 @@ const crystalMesh = new THREE.Mesh(
     specular: 0xffffff
   } )
 );
+crystalMesh.position.set(0, 0.75, 0);
 crystalMesh.receiveShadow = true;
 crystalMesh.castShadow = true;
 scene.add( crystalMesh );
