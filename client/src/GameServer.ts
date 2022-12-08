@@ -43,20 +43,7 @@ export class GameServer {
         const t = worldState.t as unknown as number;
         if (this.lastWorldState > t) return; 
         this.lastWorldState = t;
-
-        this.worldStateBuffer.push(worldState);
-
-        // for (let key in worldState)
-        // {
-        //     if (key == 'T') continue;
-        //     if (key == this.connection.connectionId) continue;
-            
-
-       
-
-        //     this.objects[key].position.set(worldState[key].x, worldState[key].y, worldState[key].z);
-        //     (this.objects[key] as Player).render(0);
-        // }        
+        this.worldStateBuffer.push(worldState);   
     }
 
     private async render() {
@@ -108,10 +95,14 @@ export class GameServer {
         }
     }
     
-
     sendPosition(position: Vector3, rotation: number) {
         if (this.connection.state != signalR.HubConnectionState.Connected) return;
         this.connection.send("updatePos", position.x , position.y, position.z, rotation, Date.now());
+    }
+
+    shoot(position: Vector3, angle: number) {
+        if (this.connection.state != signalR.HubConnectionState.Connected) return;
+        this.connection.send("shoot", position.x , position.y, position.z, angle, Date.now());
     }
 }
 

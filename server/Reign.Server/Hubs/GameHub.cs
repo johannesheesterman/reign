@@ -13,11 +13,6 @@ public class GameHub : Hub
         this._worldStateService = worldStateService;
     }
 
-    public override async Task OnConnectedAsync()
-    {
-
-    }
-
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         _worldStateService.Remove(Context.ConnectionId);
@@ -26,15 +21,17 @@ public class GameHub : Hub
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
         var playerPosition = _worldStateService.GetWorldObjectState(Context.ConnectionId);
+        if (playerPosition.Time > t) return;
+
         playerPosition.Time = t;
-
-        var newPosition = new Vector3(x, y, z);
-        var oldPosition = new Vector3(playerPosition.X, playerPosition.Y, playerPosition.Z);
-        if (newPosition == oldPosition && r == playerPosition.Rotation) return;
-
         playerPosition.X = x;
         playerPosition.Y = y;
         playerPosition.Z = z;
         playerPosition.Rotation = r;
     }    
+
+    public async Task Shoot(float x, float y, float z, float angle, long t) 
+    {
+        Console.WriteLine($"Add projectile {x}, {y}, {z}, {angle}");
+    }
 }
