@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Vector3 } from "three";
-import { GameObject } from "./GameObject";
-import { GameServer } from "./GameServer";
+import { GameObject } from "../GameObject";
+import { GameServer } from "../GameServer";
 
 declare var gameServer: GameServer;
 

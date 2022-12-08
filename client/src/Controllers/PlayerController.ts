@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GameObject } from "../GameObject";
 import { GameServer } from "../GameServer";
 import { InputManager } from "./InputManager";
-import { Player } from "../Player";
+import { Player } from "../Models/Player";
 
 declare var inputManager: InputManager;
 declare var gameServer: GameServer;

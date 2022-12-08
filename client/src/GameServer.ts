@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
 import { ModelLoader } from "./ModelLoader";
-import { Player } from "./Player";
+import { Player } from "./Models/Player";
 
 export class GameServer {
 

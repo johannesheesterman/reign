@@ -5,7 +5,7 @@ import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPix
 import { GameServer } from './GameServer';
 import { InputManager } from './Controllers/InputManager';
 import { JoystickController } from './Controllers/JoystickController';
-import { Player } from './Player';
+import { Player } from './Models/Player';
 import { PlayerController } from './Controllers/PlayerController';
 
 
