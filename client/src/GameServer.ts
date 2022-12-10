@@ -7,7 +7,7 @@ import { Player } from "./Models/Player";
 
 export class GameServer {
 
-    private gameServerUrl = "http://localhost:5044/game";
+    private gameServerUrl = "http://192.168.0.103:5044/game";
     private connection: signalR.HubConnection;
 
     private lastWorldState = 0;
@@ -69,9 +69,11 @@ export class GameServer {
             if (key == this.connection.connectionId) continue;
 
             if (!this.objects[key]) {
-                const model = await Player.CreateInstance();
-                this.objects[key] = model;
-                this.world.add(this.objects[key]);
+                this.objects[key] = new THREE.Object3D();
+                Player.CreateInstance().then((model) => {
+                    this.objects[key] = model;
+                    this.world.add(this.objects[key]);
+                });
             } 
 
             const pos0x = (this.worldStateBuffer[0][key] as WorldObjectState).x;

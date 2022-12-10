@@ -37,6 +37,8 @@ public class WorldStateService
         {
             while(true)
             {
+                Console.Clear();
+                Console.WriteLine($"World state contains {_worldState.Count} entities.");
                 _worldState["T"] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 await _hubContext.Clients.All.SendAsync("worldState", _worldState);  
                 await Task.Delay(50);
