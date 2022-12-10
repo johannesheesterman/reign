@@ -41,6 +41,10 @@ public class WorldStateService
                 Console.WriteLine($"World state contains {_worldState.Count} entities.");
                 _worldState["T"] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 await _hubContext.Clients.All.SendAsync("worldState", _worldState);  
+                foreach (var obj in _worldState)
+                {
+                    Console.WriteLine($"{obj.Key} {obj.Value}");
+                }
                 await Task.Delay(50);
             }
         }).Start();
@@ -55,4 +59,10 @@ public class WorldObjectState
     public float Z { get; set; }
     public float Rotation { get; set; }
     public long Time { get; set; }
+
+
+    public override string ToString()
+    {
+        return $"{X}, {Y}, {Z}, {Rotation}, {Time}";
+    }
 }

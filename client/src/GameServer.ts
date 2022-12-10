@@ -7,7 +7,7 @@ import { Player } from "./Models/Player";
 
 export class GameServer {
 
-    private gameServerUrl = "http://192.168.0.103:5044/game";
+    private gameServerUrl = "http://192.168.178.158:5044/game";
     private connection: signalR.HubConnection;
 
     private lastWorldState = 0;
@@ -36,7 +36,11 @@ export class GameServer {
             this.onReceiveWorldState(worldState);
         });
 
-        this.connection.start().catch((err) => console.error(err))
+        this.connection.start()
+            .then(() => {
+                document.getElementById('player-id').innerText = `Player: ${this.connection.connectionId}`;
+            })
+            .catch((err) => console.error(err))
     }
     
     private async onReceiveWorldState(worldState: WorldState) {
@@ -76,22 +80,26 @@ export class GameServer {
                 });
             } 
 
-            const pos0x = (this.worldStateBuffer[0][key] as WorldObjectState).x;
-            const pos0y = (this.worldStateBuffer[0][key] as WorldObjectState).y;
-            const pos0z = (this.worldStateBuffer[0][key] as WorldObjectState).z;
-
-            const pos1x = (this.worldStateBuffer[1][key] as WorldObjectState).x;
-            const pos1y = (this.worldStateBuffer[1][key] as WorldObjectState).y;
-            const pos1z = (this.worldStateBuffer[1][key] as WorldObjectState).z;
+            const state0 = this.worldStateBuffer[0][key] as WorldObjectState;
+            const state1 = this.worldStateBuffer[1][key] as WorldObjectState;
+            if (!state0 || !state1) continue;
 
             const target = new THREE.Vector3(
-                lerp(pos0x, pos1x, interpolationFactor),
-                lerp(pos0y, pos1y, interpolationFactor),
-                lerp(pos0z, pos1z, interpolationFactor)
+                state0.x == state1.x ? state1.x : lerp(state0.x, state1.x, interpolationFactor),
+                state0.y == state1.y ? state1.y : lerp(state0.y, state1.y, interpolationFactor),
+                state0.z == state1.z ? state1.z : lerp(state0.z, state1.z, interpolationFactor)
             );
 
             const object = this.objects[key] as Player;
+            
             object.velocity = target.sub(object.position);
+
+            if ( object.velocity.length() > 0) {
+                console.log('velocity', key, object.velocity);
+                console.log('pos', state0, state1, interpolationFactor);
+            }
+            
+            if (!object.render) continue;
             object.render(delta);
             object.scene.rotation.y = (worldState[key] as WorldObjectState).rotation;
         }
