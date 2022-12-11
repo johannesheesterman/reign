@@ -88,7 +88,7 @@ export class GameServer {
 
             if (!object.render) continue;
             object.render(delta);
-            object.scene.rotation.y = (worldState[key] as WorldObjectState).rotation;
+            object.scene.rotation.y = lerp(state0.rotation, state1.rotation, interpolationFactor);
         }
     }
     
