@@ -42,6 +42,13 @@ export class GameServer {
     private async onReceiveWorldState(worldState: WorldState) {
         worldState.T = Date.now();
         this.worldStateBuffer.push(worldState);   
+
+        for (let key of Object.keys(this.objects)) {
+            if (!(key in worldState)) {
+                this.world.remove(this.objects[key]);
+                delete this.objects[key];
+            }
+        }
     }
 
     public render(delta:number) {
