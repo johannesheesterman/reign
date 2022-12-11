@@ -7,10 +7,9 @@ import { Player } from "./Models/Player";
 
 export class GameServer {
 
-    private gameServerUrl = "http://localhost:5044/game";
+    private gameServerUrl = "http:///192.168.0.103:5044/game";
     private connection: signalR.HubConnection;
 
-    private lastWorldState = 0;
     private worldStateBuffer: WorldState[] = [];
     private interpolationOffset = 100;
     private objects: { [id:string]: THREE.Object3D } = {};
@@ -41,9 +40,7 @@ export class GameServer {
     }
     
     private async onReceiveWorldState(worldState: WorldState) {
-        const t = worldState.t as unknown as number;
-        if (this.lastWorldState > t) return; 
-        this.lastWorldState = t;
+        worldState.T = Date.now();
         this.worldStateBuffer.push(worldState);   
     }
 
@@ -60,7 +57,7 @@ export class GameServer {
         const t1 = this.worldStateBuffer[1].T as number;
 
         const interpolationFactor = (renderTime - t0) / (t1 - t0);
-         
+        
         const worldState = this.worldStateBuffer[0];
         for (let key in worldState)
         {
@@ -89,11 +86,6 @@ export class GameServer {
             
             object.velocity = target.sub(object.position);
 
-            if ( object.velocity.length() > 0) {
-                console.log('velocity', key, object.velocity);
-                console.log('pos', state0, state1, interpolationFactor);
-            }
-            
             if (!object.render) continue;
             object.render(delta);
             object.scene.rotation.y = (worldState[key] as WorldObjectState).rotation;
