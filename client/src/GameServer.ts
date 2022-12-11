@@ -7,7 +7,7 @@ import { Player } from "./Models/Player";
 
 export class GameServer {
 
-    private gameServerUrl = "http://192.168.178.158:5044/game";
+    private gameServerUrl = "http://localhost:5044/game";
     private connection: signalR.HubConnection;
 
     private lastWorldState = 0;
@@ -22,9 +22,6 @@ export class GameServer {
     constructor(private world: THREE.Object3D) {
         this.initializeConnection();
         this.modelLoader = new ModelLoader();
-
-        
-        this.render();
     }
 
     private initializeConnection() {
@@ -50,12 +47,10 @@ export class GameServer {
         this.worldStateBuffer.push(worldState);   
     }
 
-    private async render() {
-        requestAnimationFrame(() => this.render());
+    public render(delta:number) {
 
         if (this.worldStateBuffer.length < 2) return;
 
-        const delta = this.clock.getDelta();
         const renderTime = Date.now() - this.interpolationOffset;
 
         while (this.worldStateBuffer.length > 2 && renderTime > this.worldStateBuffer[1].T)

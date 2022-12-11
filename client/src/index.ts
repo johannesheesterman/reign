@@ -104,7 +104,8 @@ target.position.set( 0, 0, 0 );
 spotLight.castShadow = true;
 scene.add( spotLight );
 
-window['gameServer'] =  new GameServer(scene);
+var gameServer = new GameServer(scene);
+window['gameServer'] =  gameServer;
 window['inputManager'] =  new InputManager();;
 const clock = new THREE.Clock();
 const player = new PlayerController(camera);
@@ -121,6 +122,7 @@ const animate = function () {
   renderer.render(scene, camera);
 
   const delta = clock.getDelta();
+  gameServer.render(delta);
   player.render(delta)
 };
 
