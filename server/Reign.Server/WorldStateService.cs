@@ -8,7 +8,7 @@ namespace Reign.Server;
 public class WorldStateService
 {
     private readonly IHubContext<GameHub> _hubContext;
-    private Dictionary<string, object> _worldState = new ();
+    private Dictionary<string, WorldObjectState> _worldState = new ();
 
     public WorldStateService(IHubContext<GameHub> hubcontext)
     {
@@ -39,7 +39,6 @@ public class WorldStateService
             {
                 Console.Clear();
                 Console.WriteLine($"World state contains {_worldState.Count} entities.");
-                _worldState["T"] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 await _hubContext.Clients.All.SendAsync("worldState", _worldState);  
                 foreach (var obj in _worldState)
                 {
@@ -58,11 +57,11 @@ public class WorldObjectState
     public float Y { get; set; }
     public float Z { get; set; }
     public float Rotation { get; set; }
-    public long Time { get; set; }
+    public string Type { get; set; }
 
 
     public override string ToString()
     {
-        return $"{X}, {Y}, {Z}, {Rotation}, {Time}";
+        return $"{Type}: {X}, {Y}, {Z}, {Rotation}";
     }
 }

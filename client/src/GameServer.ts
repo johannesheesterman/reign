@@ -16,8 +16,6 @@ export class GameServer {
 
     public modelLoader: ModelLoader;
 
-    private clock = new THREE.Clock();
-
     constructor(private world: THREE.Object3D) {
         this.initializeConnection();
         this.modelLoader = new ModelLoader();
@@ -73,10 +71,12 @@ export class GameServer {
 
             if (!this.objects[key]) {
                 this.objects[key] = new THREE.Object3D();
-                Player.CreateInstance().then((model) => {
-                    this.objects[key] = model;
-                    this.world.add(this.objects[key]);
-                });
+                if ((worldState[key] as WorldObjectState).type == 'player') {
+                    Player.CreateInstance().then((model) => {
+                        this.objects[key] = model;
+                        this.world.add(this.objects[key]);
+                    });
+                }                
             } 
 
             const state0 = this.worldStateBuffer[0][key] as WorldObjectState;
@@ -119,5 +119,5 @@ class WorldObjectState {
     y: number;
     z: number;
     rotation: number;
-    time: number;
+    type: string;
 }

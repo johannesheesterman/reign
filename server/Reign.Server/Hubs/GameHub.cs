@@ -21,9 +21,7 @@ public class GameHub : Hub
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
         var playerPosition = _worldStateService.GetWorldObjectState(Context.ConnectionId);
-        if (playerPosition.Time > t) return;
-
-        playerPosition.Time = t;
+        playerPosition.Type = "player";
         playerPosition.X = x;
         playerPosition.Y = y;
         playerPosition.Z = z;
