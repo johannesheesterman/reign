@@ -33,18 +33,33 @@ public class WorldStateService
 
     private void InitializeServerLoop()
     {
+        var delta = 50;
         new Thread(async () => 
         {
             while(true)
             {
                 Console.Clear();
+                
+                var t = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+                foreach (var key in _worldState.Keys.ToArray())
+                {                   
+                    var obj = _worldState[key];
+                    obj.Update(delta);
+                    Console.WriteLine($"{key} {obj}");
+
+                    if (obj.Type == "arrow")
+                    {
+                        if (obj.T + 3000 < t)
+                        {
+                            _worldState.Remove(key);
+                        }
+                    }
+                }
+                
                 Console.WriteLine($"World state contains {_worldState.Count} entities.");
                 await _hubContext.Clients.All.SendAsync("worldState", _worldState);  
-                foreach (var obj in _worldState)
-                {
-                    Console.WriteLine($"{obj.Key} {obj.Value}");
-                }
-                await Task.Delay(50);
+                await Task.Delay(delta);
             }
         }).Start();
     }
@@ -56,8 +71,24 @@ public class WorldObjectState
     public float X { get; set; }
     public float Y { get; set; }
     public float Z { get; set; }
+    public long T { get; set; }
     public float Rotation { get; set; }
     public string Type { get; set; }
+
+
+    public void Update(int delta) 
+    {
+        if (Type == "player") return;
+
+        if (Type == "arrow")
+        {
+            var speed =  0.01f;
+            var dx = MathF.Sin(-Rotation) * speed * delta;
+            var dy = MathF.Cos(Rotation) * speed * delta;
+            X += dx;
+            Z += dy;
+        }
+    }
 
 
     public override string ToString()

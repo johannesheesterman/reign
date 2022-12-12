@@ -26,10 +26,17 @@ public class GameHub : Hub
         playerPosition.Y = y;
         playerPosition.Z = z;
         playerPosition.Rotation = r;
+        playerPosition.T = t;
     }    
 
     public async Task Shoot(float x, float y, float z, float angle, long t) 
     {
-        Console.WriteLine($"Add projectile {x}, {y}, {z}, {angle}");
+        var obj = _worldStateService.GetWorldObjectState(Guid.NewGuid().ToString());
+        obj.Type = "arrow";
+        obj.X = x;
+        obj.Y = y;
+        obj.Z = z;
+        obj.Rotation = angle;
+        obj.T = DateTimeOffset.Now.ToUnixTimeMilliseconds();
     }
 }

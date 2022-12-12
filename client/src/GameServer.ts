@@ -3,11 +3,12 @@ import * as THREE from "three";
 import { Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
 import { ModelLoader } from "./ModelLoader";
+import { Arrow } from "./Models/Arrow";
 import { Player } from "./Models/Player";
 
 export class GameServer {
 
-    private gameServerUrl = "http:///192.168.0.103:5044/game";
+    private gameServerUrl = "http:///localhost:5044/game";
     private connection: signalR.HubConnection;
 
     private worldStateBuffer: WorldState[] = [];
@@ -76,6 +77,12 @@ export class GameServer {
                         this.objects[key] = model;
                         this.world.add(this.objects[key]);
                     });
+                }
+                else if ((worldState[key] as WorldObjectState).type == 'arrow') {
+                    Arrow.CreateInstance().then((model) => {
+                        this.objects[key] = model;
+                        this.world.add(this.objects[key]);
+                    });
                 }                
             } 
 
@@ -95,7 +102,7 @@ export class GameServer {
 
             if (!object.render) continue;
             object.render(delta);
-            object.scene.rotation.y = lerp(state0.rotation, state1.rotation, interpolationFactor);
+            //object.scene.rotation.y = lerp(state0.rotation, state1.rotation, interpolationFactor);
         }
     }
     
