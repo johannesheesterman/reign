@@ -52,21 +52,12 @@ public class WorldStateService
             {
                 Console.Clear();
                 
-                var t = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                 foreach (var key in WorldState.Instance.State.Keys.ToArray())
                 {                   
                     var obj = WorldState.Instance.State[key];
                     obj.Update(delta);
                     Console.WriteLine($"{key} {obj}");
-
-                    if (obj.Type == "arrow")
-                    {
-                        if (obj.T + 3000 < t)
-                        {
-                            WorldState.Instance.State.Remove(key);
-                        }
-                    }
                 }
                 
                 await _hubContext.Clients.All.SendAsync("worldState", WorldState.Instance.State); 

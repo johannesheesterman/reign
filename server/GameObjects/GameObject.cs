@@ -17,6 +17,10 @@ public abstract class GameObject
         return $"{this.GetType().Name}: {X}, {Y}, {Z}, {Rotation}";
     }
 
-    
+    public void Destroy()
+    {
+        WorldState.Instance.State.Remove(
+            WorldState.Instance.State.First(s => s.Value == this).Key);
 
+    }
 }
