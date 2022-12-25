@@ -17,4 +17,6 @@ public abstract class GameObject
         return $"{this.GetType().Name}: {X}, {Y}, {Z}, {Rotation}";
     }
 
+    
+
 }

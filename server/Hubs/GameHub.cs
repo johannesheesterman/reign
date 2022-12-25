@@ -16,17 +16,15 @@ public class GameHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _worldStateService.Remove(Context.ConnectionId);
+        WorldState.Instance.State.Remove(Context.ConnectionId);
     }
 
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
-        var playerPosition = _worldStateService.GetWorldObjectState(Context.ConnectionId);
-
-        if (playerPosition == null)
+        if(!WorldState.Instance.State.TryGetValue(Context.ConnectionId, out var playerPosition))
         {
             playerPosition = new Player();
-            _worldStateService.RegisterGameObject(Context.ConnectionId, playerPosition);
+            WorldState.Instance.State.Add(Context.ConnectionId, playerPosition);
         }
 
         playerPosition.X = x;
@@ -45,6 +43,6 @@ public class GameHub : Hub
         obj.Rotation = angle;
         obj.T = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        _worldStateService.RegisterGameObject(Guid.NewGuid().ToString(), obj);
+        WorldState.Instance.State.Add(Guid.NewGuid().ToString(), obj);
     }
 }

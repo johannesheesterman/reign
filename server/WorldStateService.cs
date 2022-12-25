@@ -6,10 +6,31 @@ using Reign.Server.Hubs;
 
 namespace Reign.Server;
 
+public class WorldState 
+{
+    public Dictionary<string, GameObject> State = new();
+    private static WorldState? _instance = null;
+
+    private WorldState()
+    {
+
+    }
+
+    public static WorldState Instance
+    {
+        get
+        {
+            if (_instance == null) 
+                _instance = new WorldState();
+
+            return _instance;
+        }        
+    }
+}
+
 public class WorldStateService
 {
     private readonly IHubContext<GameHub> _hubContext;
-    private Dictionary<string, GameObject> _worldState = new ();
 
     public WorldStateService(IHubContext<GameHub> hubcontext)
     {
@@ -17,20 +38,9 @@ public class WorldStateService
         InitializeServerLoop();
     }
 
-    public GameObject? GetWorldObjectState(string key)
+    public void AddGameObject(string key, GameObject gameObject)
     {
-        if (_worldState.TryGetValue(key, out var state)) return state;
-        return null;
-    }
-
-    public void RegisterGameObject(string key, GameObject gameObject)
-    {
-        _worldState[key] = gameObject;
-    }
-
-    public void Remove(string key)
-    {
-        _worldState.Remove(key);
+        WorldState.Instance.State.Add(key, gameObject);
     }
 
     private void InitializeServerLoop()
@@ -44,9 +54,9 @@ public class WorldStateService
                 
                 var t = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-                foreach (var key in _worldState.Keys.ToArray())
+                foreach (var key in WorldState.Instance.State.Keys.ToArray())
                 {                   
-                    var obj = _worldState[key];
+                    var obj = WorldState.Instance.State[key];
                     obj.Update(delta);
                     Console.WriteLine($"{key} {obj}");
 
@@ -54,14 +64,14 @@ public class WorldStateService
                     {
                         if (obj.T + 3000 < t)
                         {
-                            _worldState.Remove(key);
+                            WorldState.Instance.State.Remove(key);
                         }
                     }
                 }
                 
-                await _hubContext.Clients.All.SendAsync("worldState", _worldState); 
+                await _hubContext.Clients.All.SendAsync("worldState", WorldState.Instance.State); 
                 
-                Console.WriteLine($"World state contains {_worldState.Count} entities."); 
+                Console.WriteLine($"World state contains {WorldState.Instance.State.Count} entities."); 
                 await Task.Delay(delta);
             }
         }).Start();
