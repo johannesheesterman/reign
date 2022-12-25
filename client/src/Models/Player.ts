@@ -31,6 +31,9 @@ export class Player extends GameObject{
         for (let animation of this.scene.animations) {
             this.animationActions[animation.name] = this.animationMixer.clipAction(animation);
             this.animationActions[animation.name].loop = THREE.LoopRepeat;
+
+            if (animation.name == "Shoot")
+                this.animationActions[animation.name].loop = THREE.LoopOnce;
         }
     }
 
@@ -49,18 +52,22 @@ export class Player extends GameObject{
         }
     }
 
-    private playRunAnimation() {
+    public playRunAnimation() {
         if (!this.animationActions['Run'].isRunning()) {
             this.animationActions['Run'].play();            
             this.animationActions['Idle'].stop();
         }
     }
 
-    private playIdleAnimation() {
+    public playIdleAnimation() {
         if (!this.animationActions['Idle'].isRunning()) {
             this.animationActions['Idle'].play();           
             this.animationActions['Run'].stop();             
         }
     }
-
+    
+    public playShootAnimation() {
+        this.animationActions['Shoot'].stop();  
+        this.animationActions['Shoot'].play();     
+    }
 }

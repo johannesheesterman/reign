@@ -59,8 +59,9 @@ public class WorldStateService
                     }
                 }
                 
-                Console.WriteLine($"World state contains {_worldState.Count} entities.");
-                await _hubContext.Clients.All.SendAsync("worldState", _worldState);  
+                await _hubContext.Clients.All.SendAsync("worldState", _worldState); 
+                
+                Console.WriteLine($"World state contains {_worldState.Count} entities."); 
                 await Task.Delay(delta);
             }
         }).Start();

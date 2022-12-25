@@ -54,8 +54,8 @@ export class PlayerController extends GameObject {
     }
 
     private shoot(angle: number) {
-        // angle = angle + 2 * (1.25 * Math.PI);
         gameServer.shoot(this.model.position, angle);
+        this.model.playShootAnimation();
     }
 
     render(delta: number): void {
