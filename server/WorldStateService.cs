@@ -1,6 +1,7 @@
 
 using System.Numerics;
 using Microsoft.AspNetCore.SignalR;
+using Reign.Server.GameObjects;
 using Reign.Server.Hubs;
 
 namespace Reign.Server;
@@ -8,7 +9,7 @@ namespace Reign.Server;
 public class WorldStateService
 {
     private readonly IHubContext<GameHub> _hubContext;
-    private Dictionary<string, WorldObjectState> _worldState = new ();
+    private Dictionary<string, GameObject> _worldState = new ();
 
     public WorldStateService(IHubContext<GameHub> hubcontext)
     {
@@ -16,14 +17,15 @@ public class WorldStateService
         InitializeServerLoop();
     }
 
-    public WorldObjectState GetWorldObjectState(string key)
+    public GameObject? GetWorldObjectState(string key)
     {
-        if (!_worldState.TryGetValue(key, out var state))
-        {
-            state = new WorldObjectState();
-            _worldState[key] = state;
-        }
-        return state as WorldObjectState;            
+        if (_worldState.TryGetValue(key, out var state)) return state;
+        return null;
+    }
+
+    public void RegisterGameObject(string key, GameObject gameObject)
+    {
+        _worldState[key] = gameObject;
     }
 
     public void Remove(string key)
@@ -62,37 +64,5 @@ public class WorldStateService
                 await Task.Delay(delta);
             }
         }).Start();
-    }
-}
-
-
-public class WorldObjectState 
-{
-    public float X { get; set; }
-    public float Y { get; set; }
-    public float Z { get; set; }
-    public long T { get; set; }
-    public float Rotation { get; set; }
-    public string Type { get; set; }
-
-
-    public void Update(int delta) 
-    {
-        if (Type == "player") return;
-
-        if (Type == "arrow")
-        {
-            var speed =  0.01f;
-            var dx = MathF.Sin(-Rotation) * speed * delta;
-            var dy = MathF.Cos(Rotation) * speed * delta;
-            X += dx;
-            Z += dy;
-        }
-    }
-
-
-    public override string ToString()
-    {
-        return $"{Type}: {X}, {Y}, {Z}, {Rotation}";
     }
 }

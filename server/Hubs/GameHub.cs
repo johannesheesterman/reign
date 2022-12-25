@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.SignalR;
+using Reign.Server.GameObjects;
 using System.Numerics;
 
 namespace Reign.Server.Hubs;
@@ -21,7 +22,13 @@ public class GameHub : Hub
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
         var playerPosition = _worldStateService.GetWorldObjectState(Context.ConnectionId);
-        playerPosition.Type = "player";
+
+        if (playerPosition == null)
+        {
+            playerPosition = new Player();
+            _worldStateService.RegisterGameObject(Context.ConnectionId, playerPosition);
+        }
+
         playerPosition.X = x;
         playerPosition.Y = y;
         playerPosition.Z = z;
@@ -31,12 +38,13 @@ public class GameHub : Hub
 
     public async Task Shoot(float x, float y, float z, float angle, long t) 
     {
-        var obj = _worldStateService.GetWorldObjectState(Guid.NewGuid().ToString());
-        obj.Type = "arrow";
+        var obj = new Arrow();
         obj.X = x;
         obj.Y = y;
         obj.Z = z;
         obj.Rotation = angle;
         obj.T = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        _worldStateService.RegisterGameObject(Guid.NewGuid().ToString(), obj);
     }
 }
