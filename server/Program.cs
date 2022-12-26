@@ -17,12 +17,14 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
 
 
 builder.Services.AddTransient<WorldStateBroadcastSystem>();
+builder.Services.AddTransient<PhysicsSystem>();
 builder.Services.AddSingleton<World>();
 
 var app = builder.Build();
 
 var world = app.Services.GetService<World>()!;
 world.AddSystem(app.Services.GetService<WorldStateBroadcastSystem>()!);
+world.AddSystem(app.Services.GetService<PhysicsSystem>()!);
 
 var gameServer = new GameServer(
     world

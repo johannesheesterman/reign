@@ -24,7 +24,7 @@ public class WorldStateBroadcastSystem : GameSystem
                 { "x", entity.GetComponent<PositionComponent>().Position.X },
                 { "y", entity.GetComponent<PositionComponent>().Position.Y },
                 { "z", entity.GetComponent<PositionComponent>().Position.Z },
-                { "r", 0 },
+                { "r", entity.GetComponent<PositionComponent>().Rotation },
                 { "type", entity.GetComponent<TypeComponent>().Type }
             };
         }

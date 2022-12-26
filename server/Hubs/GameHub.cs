@@ -35,13 +35,18 @@ public class GameHub : Hub
 
     public async Task Shoot(float x, float y, float z, float angle, long t) 
     {
-        // var obj = new Arrow(Context.ConnectionId);
-        // obj.X = x;
-        // obj.Y = y;
-        // obj.Z = z;
-        // obj.Rotation = angle;
-        // obj.T = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-       // World.Instance.State.Add(Guid.NewGuid().ToString(), obj);
+        // TODO: method to instantiate arrows
+        var entity = world.AddEntity(Guid.NewGuid().ToString());
+        world.AddComponentToEntity(entity, new PositionComponent(
+            new Vector3(x, y, z), angle
+        ));
+        world.AddComponentToEntity(entity, new VelocityComponent(
+            new Vector3(
+                MathF.Sin(-angle) * .01f,
+                0f,
+                MathF.Cos(angle) * .01f
+            )
+        ));
+        world.AddComponentToEntity(entity, new TypeComponent("arrow"));
     }
 }
