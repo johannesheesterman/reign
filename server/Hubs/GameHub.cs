@@ -36,7 +36,7 @@ public class GameHub : Hub
 
     public async Task Shoot(float x, float y, float z, float angle, long t) 
     {
-        var obj = new Arrow();
+        var obj = new Arrow(Context.ConnectionId);
         obj.X = x;
         obj.Y = y;
         obj.Z = z;
