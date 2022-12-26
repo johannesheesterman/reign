@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.SignalR;
+using Reign.Server.Components;
 using Reign.Server.GameObjects;
 using System.Numerics;
 
@@ -7,42 +8,40 @@ namespace Reign.Server.Hubs;
 
 public class GameHub : Hub
 {
-    private readonly WorldStateService _worldStateService;
+    private readonly World world;
 
-    public GameHub(WorldStateService worldStateService)
+    public GameHub(World world)
     {
-        this._worldStateService = worldStateService;
+        this.world = world;
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        WorldState.Instance.State.Remove(Context.ConnectionId);
+        world.DeleteEntity(Context.ConnectionId);
     }
 
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
-        if(!WorldState.Instance.State.TryGetValue(Context.ConnectionId, out var playerPosition))
+        if (!world.TryGetEntityById(Context.ConnectionId, out var entity))
         {
-            playerPosition = new Player();
-            WorldState.Instance.State.Add(Context.ConnectionId, playerPosition);
+            // TODO: method to instantiate player entities
+            entity = world.AddEntity(Context.ConnectionId);
+            world.AddComponentToEntity(entity, new PositionComponent());
+            world.AddComponentToEntity(entity, new TypeComponent("player"));
         }
 
-        playerPosition.X = x;
-        playerPosition.Y = y;
-        playerPosition.Z = z;
-        playerPosition.Rotation = r;
-        playerPosition.T = t;
+        entity!.GetComponent<PositionComponent>().Position = new Vector3(x, y, z);
     }    
 
     public async Task Shoot(float x, float y, float z, float angle, long t) 
     {
-        var obj = new Arrow(Context.ConnectionId);
-        obj.X = x;
-        obj.Y = y;
-        obj.Z = z;
-        obj.Rotation = angle;
-        obj.T = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        // var obj = new Arrow(Context.ConnectionId);
+        // obj.X = x;
+        // obj.Y = y;
+        // obj.Z = z;
+        // obj.Rotation = angle;
+        // obj.T = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        WorldState.Instance.State.Add(Guid.NewGuid().ToString(), obj);
+       // World.Instance.State.Add(Guid.NewGuid().ToString(), obj);
     }
 }

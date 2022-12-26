@@ -26,8 +26,8 @@ public abstract class GameObject
 
     public void Destroy()
     {
-        WorldState.Instance.State.Remove(
-            WorldState.Instance.State.First(s => s.Value == this).Key);
+        // World.Instance.State.Remove(
+        //     World.Instance.State.First(s => s.Value == this).Key);
 
     }
 }
