@@ -22,11 +22,12 @@ public class GameHub : Hub
 
     public async Task UpdatePos(float x, float y, float z, float r, long t)
     {
+        // TODO: method to instantiate player entities
         if (!world.TryGetEntityById(Context.ConnectionId, out var entity))
         {
-            // TODO: method to instantiate player entities
             entity = world.AddEntity(Context.ConnectionId);
             world.AddComponentToEntity(entity, new PositionComponent());
+            world.AddComponentToEntity(entity, new HealthComponent(100));
             world.AddComponentToEntity(entity, new TypeComponent("player"));
         }
 
@@ -47,6 +48,7 @@ public class GameHub : Hub
                 MathF.Cos(angle) * .01f
             )
         ));
+        world.AddComponentToEntity(entity, new DamageComponent(40));
         world.AddComponentToEntity(entity, new TypeComponent("arrow"));
     }
 }
