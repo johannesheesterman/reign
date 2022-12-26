@@ -2,9 +2,12 @@ import * as signalR from "@microsoft/signalr";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import { lerp } from "three/src/math/MathUtils";
+import { PlayerController } from "./Controllers/PlayerController";
 import { ModelLoader } from "./ModelLoader";
 import { Arrow } from "./Models/Arrow";
 import { Player } from "./Models/Player";
+
+declare var playerController: PlayerController;
 
 export class GameServer {
 
@@ -14,6 +17,7 @@ export class GameServer {
     private worldStateBuffer: WorldState[] = [];
     private interpolationOffset = 100;
     private objects: { [id:string]: THREE.Object3D } = {};
+    
 
     public modelLoader: ModelLoader;
 
@@ -68,7 +72,20 @@ export class GameServer {
         for (let key in worldState)
         {
             if (key == 'T') continue;
-            if (key == this.connection.connectionId) continue;
+
+            const state0 = this.worldStateBuffer[0][key] as WorldObjectState;
+            const state1 = this.worldStateBuffer[1][key] as WorldObjectState;
+            if (!state0 || !state1) continue;
+
+
+            if (key == this.connection.connectionId) {
+                let p1 = new THREE.Vector3(state1.x, state1.y, state1.z);
+                let p2 = playerController['model'].position;
+                if (p1.distanceTo(p2) > 0.5) {
+                    playerController.setPosition(p1.x, p1.y, p1.z);
+                }
+                continue;
+            };
 
             if (!this.objects[key]) {
                 this.objects[key] = new THREE.Object3D();
@@ -84,11 +101,7 @@ export class GameServer {
                         this.world.add(this.objects[key]);
                     });
                 }                
-            } 
-
-            const state0 = this.worldStateBuffer[0][key] as WorldObjectState;
-            const state1 = this.worldStateBuffer[1][key] as WorldObjectState;
-            if (!state0 || !state1) continue;
+            }           
 
             const target = new THREE.Vector3(
                 state0.x == state1.x ? state1.x : lerp(state0.x, state1.x, interpolationFactor),

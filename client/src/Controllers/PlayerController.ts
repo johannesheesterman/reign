@@ -58,6 +58,10 @@ export class PlayerController extends GameObject {
         this.model.playShootAnimation();
     }
 
+    public setPosition(x: number, y: number, z: number) {
+        this.model.position.set(x, y, z);
+    }
+
     render(delta: number): void {
         if (!this.model) return;
         
