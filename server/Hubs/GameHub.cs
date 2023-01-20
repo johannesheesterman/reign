@@ -28,6 +28,7 @@ public class GameHub : Hub
             entity = world.AddEntity(Context.ConnectionId);
             world.AddComponentToEntity(entity, new PositionComponent());
             world.AddComponentToEntity(entity, new HealthComponent(100));
+            world.AddComponentToEntity(entity, new ColliderComponent(0.25f));
             world.AddComponentToEntity(entity, new TypeComponent("player"));
         }
 
@@ -49,6 +50,8 @@ public class GameHub : Hub
             )
         ));
         world.AddComponentToEntity(entity, new DamageComponent(40));
+        world.AddComponentToEntity(entity, new ProjectileComponent(Context.ConnectionId, 3000));
+        world.AddComponentToEntity(entity, new ColliderComponent(0.1f));
         world.AddComponentToEntity(entity, new TypeComponent("arrow"));
     }
 }

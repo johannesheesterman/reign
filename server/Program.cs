@@ -18,6 +18,7 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
 
 builder.Services.AddTransient<WorldStateBroadcastSystem>();
 builder.Services.AddTransient<PhysicsSystem>();
+builder.Services.AddTransient<ProjectileDamageSystem>();
 builder.Services.AddSingleton<World>();
 
 var app = builder.Build();
@@ -25,6 +26,7 @@ var app = builder.Build();
 var world = app.Services.GetService<World>()!;
 world.AddSystem(app.Services.GetService<WorldStateBroadcastSystem>()!);
 world.AddSystem(app.Services.GetService<PhysicsSystem>()!);
+world.AddSystem(app.Services.GetService<ProjectileDamageSystem>()!);
 
 var gameServer = new GameServer(
     world
