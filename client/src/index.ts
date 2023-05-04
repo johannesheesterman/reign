@@ -18,8 +18,7 @@ const scene = new THREE.Scene();
 const aspect = window.innerWidth / window.innerHeight;
 const d = 5;
 const camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );
-camera.position.set( d, d, d); // all components equal
-camera.lookAt( new THREE.Vector3(0, 0, 0));
+camera.position.set(0, 0, 5);
 
 // Set up renderer
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -27,30 +26,6 @@ renderer.setClearColor(0xC2B280);
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
-// Set up pixelation effect
-// const composer = new EffectComposer( renderer );
-// const renderPixelatedPass = new RenderPixelatedPass( 4, scene, camera );
-// renderPixelatedPass.normalEdgeStrength = .6;
-// renderPixelatedPass.depthEdgeStrength = .8;
-// composer.addPass( renderPixelatedPass );
-
-// Set up plane
-const loader = new THREE.TextureLoader();
-const texChecker = pixelTexture( loader.load( 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/checker.png' ) );
-const texChecker2 = pixelTexture( loader.load( 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/checker.png' ) );
-texChecker.repeat.set( 3, 3 );
-texChecker2.repeat.set( 1.5, 1.5 );
-
-const planeSideLength = 10;
-const planeMesh = new THREE.Mesh(
-  new THREE.PlaneGeometry( planeSideLength, planeSideLength ),
-  new THREE.MeshPhongMaterial( { map: texChecker } )
-);
-planeMesh.receiveShadow = true;
-planeMesh.rotation.x = - Math.PI / 2;
-planeMesh.position.set(0, 0, 0);
-scene.add( planeMesh );
 
 // Setup cube
 const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);

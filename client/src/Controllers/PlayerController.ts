@@ -24,10 +24,6 @@ export class PlayerController extends GameObject {
             this.add(this.model)
             this.initializeGameServerUpdates();
         });        
-
-        document.addEventListener('mousedown', (e) => this.onMouseDown(e));
-        document.addEventListener('mouseup', (e) => this.onMouseUp(e));
-        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
     }
 
     private initializeGameServerUpdates() {
@@ -36,28 +32,6 @@ export class PlayerController extends GameObject {
         }, 15);
     }
     
-    private onMouseDown(e: MouseEvent) {
-        if (e.button == 0) { // Left
-            this.mouseDown = true
-        }
-        else if (e.button == 2) { // Right
-            this.shoot(this.angle);    
-        }            
-    }
-
-    private onMouseUp(e: MouseEvent) {
-        this.mouseDown = false
-    }
-
-    private onMouseMove(e: MouseEvent) {
-        this.angle = Math.atan2(e.clientY - window.innerHeight/2, e.clientX - window.innerWidth/2) + 1.25 * Math.PI;
-    }
-
-    private shoot(angle: number) {
-        gameServer.shoot(this.model.position, angle);
-        this.model.playShootAnimation();
-    }
-
     public setPosition(x: number, y: number, z: number) {
         this.model.position.set(x, y, z);
     }
@@ -67,24 +41,23 @@ export class PlayerController extends GameObject {
         
         this.model.velocity.set(0, 0, 0);
         
-        if (this.mouseDown) {
-            this.model.velocity.setX(Math.sin(-this.angle));
-            this.model.velocity.setZ(Math.cos(this.angle));
-
-            this.model.velocity = this.model.velocity
-                .normalize()
-                .multiplyScalar(this.speed * delta);            
-        }
-
-        if (inputManager.leftJoystick.value.x != 0 && inputManager.leftJoystick.value.y != 0) {
-            const angle = Math.atan2(inputManager.leftJoystick.value.y , inputManager.leftJoystick.value.x) + 1.25 * Math.PI;
-            this.model.velocity.setX(Math.sin(-angle));
-            this.model.velocity.setZ(Math.cos(angle));
+        if (inputManager.leftJoystick.value.x != 0) {
+            this.model.velocity.setX(inputManager.leftJoystick.value.x);
 
             this.model.velocity = this.model.velocity
                 .normalize()
                 .multiplyScalar(this.speed * delta);
         }
+
+        // if (inputManager.leftJoystick.value.x != 0 && inputManager.leftJoystick.value.y != 0) {
+        //     const angle = Math.atan2(inputManager.leftJoystick.value.y , inputManager.leftJoystick.value.x) * Math.PI;
+        //     this.model.velocity.setX(Math.sin(-angle));
+        //     this.model.velocity.setZ(Math.cos(angle));
+
+        //     this.model.velocity = this.model.velocity
+        //         .normalize()
+        //         .multiplyScalar(this.speed * delta);
+        // }
         
         this.model.render(delta);
     }
