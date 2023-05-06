@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Reign.Server;
+using Reign.Server.Components;
 using Reign.Server.Hubs;
 using Reign.Server.Systems;
 
@@ -31,6 +32,15 @@ world.AddSystem(app.Services.GetService<ProjectileDamageSystem>()!);
 var gameServer = new GameServer(
     world
 );
+
+
+for (int i = 0; i < 4; i++)
+{
+    var block = world.AddEntity(Guid.NewGuid().ToString());
+    world.AddComponentToEntity(block, new PositionComponent(
+        new System.Numerics.Vector3(i-1.5f, -.5f, 0)));
+    world.AddComponentToEntity(block, new TypeComponent("block"));
+}
 
 app.UseCors("CorsPolicy");
 app.MapGet("/", () => "Hello World!");

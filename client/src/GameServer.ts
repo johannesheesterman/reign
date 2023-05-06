@@ -6,6 +6,7 @@ import { PlayerController } from "./Controllers/PlayerController";
 import { ModelLoader } from "./ModelLoader";
 import { Arrow } from "./Models/Arrow";
 import { Player } from "./Models/Player";
+import { Block } from "./Models/Block";
 
 declare var playerController: PlayerController;
 
@@ -60,7 +61,7 @@ export class GameServer {
 
         const renderTime = Date.now() - this.interpolationOffset;
 
-        while (this.worldStateBuffer.length > 2 && renderTime > this.worldStateBuffer[1].T)
+        while (this.worldStateBuffer.length > 2 && renderTime > (this.worldStateBuffer[1].T as number))
             this.worldStateBuffer.splice(0, 1);
         
         const t0 = this.worldStateBuffer[0].T as number;
@@ -100,7 +101,19 @@ export class GameServer {
                         this.objects[key] = model;
                         this.world.add(this.objects[key]);
                     });
+                }          
+                else if ((worldState[key] as WorldObjectState).type == 'block') {
+                    Block.CreateInstance().then((model) => {
+                        model.position.x = state0.x;
+                        model.position.y = state0.y;
+                        model.position.z = state0.z;
+                        this.objects[key] = model;
+                        this.world.add(this.objects[key]);
+                    });
                 }                
+                else {
+                    console.log('unknown object type', (worldState[key] as WorldObjectState).type);
+                }
             }           
 
             const target = new THREE.Vector3(

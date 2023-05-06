@@ -15,6 +15,7 @@ public class World
         entities = new Dictionary<string, Entity>();
         systems = new Dictionary<Type, GameSystem>();
         toDelete = new List<string>();
+
     }
 
     public Entity AddEntity(string id)
@@ -105,4 +106,6 @@ public class World
         }
         toDelete.Clear();
     }
+
+  
 }
